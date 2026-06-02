@@ -1,1 +1,4 @@
 hysteria2://Masir_Sefid@18.198.106.153:443?sni=qus.masir-sefid.shop&obfs=salamander&obfs-password=Masir_Sefid&insecure=0#%D9%87%D9%85%D8%B1%D8%A7%D9%87%20%D8%A7%D9%88%D9%84%20Tr
+trojan://BxceQaOe@52.69.79.73:29440?security=tls&sni=t.me%2Fripaojiedian&allowInsecure=1&type=tcp&headerType=none#%D9%87%D9%85%D8%B1%D8%A7%D9%87%20%D8%A7%D9%88%D9%84%20DE
+trojan://BxceQaOe@95.40.4.37:2520?security=tls&sni=95.40.4.37&fp=chrome&allowInsecure=1&type=tcp&headerType=none#%D9%87%D9%85%D8%B1%D8%A7%D9%87%20%D8%A7%D9%88%D9%84%20Jup
+vless://b8c88c2b-f016-4bca-b306-9ff4968c24aa@snapp.ir:2095?encryption=none&security=none&type=ws&host=rat.skycmd.org&path=%2Frat#%D9%87%D9%85%D8%B1%D8%A7%D9%87%20%D8%A7%D9%88%D9%84%20Rus

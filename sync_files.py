@@ -8,7 +8,7 @@ def sync():
         new_content = lines[9:50]
 
     # لیست فایل‌هایی که باید آپدیت شوند
-    files = ['file1.txt', 'file2.txt'] 
+    files = ['pwolverddammachitherackonfiontoward.txt', 'user1.txt', 'TINA_PRV.txt'] 
 
     for file_name in files:
         if os.path.exists(file_name):

@@ -2,8 +2,8 @@ name: Update Iran Time
 
 on:
   schedule:
-    - cron: '*/1 * * * *' # اجرای هر یک دقیقه
-  workflow_dispatch:      # قابلیت اجرای دستی برای تست
+    - cron: '*/1 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
+        # نسخه به v4 آپدیت شد
         uses: actions/checkout@v4
 
       - name: Update line 44
@@ -22,17 +23,13 @@ jobs:
           from datetime import datetime
           from zoneinfo import ZoneInfo
           
-          # تنظیم زمان تهران
           now = datetime.now(ZoneInfo("Asia/Tehran")).strftime("%H:%M")
           
           file_path = "master.txt"
           with open(file_path, "r", encoding="utf-8") as f:
               lines = f.readlines()
           
-          # پیدا کردن خط 44 (ایندکس 43)
           if len(lines) >= 44:
-              # پیدا کردن الگوی عددی ساعت (XX:XX) و جایگزینی آن
-              # این عبارت فقط اعداد فرمت ساعت را در متن پیدا می‌کند
               lines[43] = re.sub(r'\d{2}:\d{2}', now, lines[43])
               
               with open(file_path, "w", encoding="utf-8") as f:
@@ -44,5 +41,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add master.txt
-          # چک کردن برای اینکه اگر تغییر نکرده بود، الکی Commit نکند
           git diff --staged --quiet || (git commit -m "Auto-update time to $(date +%H:%M) in line 44" && git push)

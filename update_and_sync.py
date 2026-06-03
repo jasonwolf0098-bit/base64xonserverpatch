@@ -1,0 +1,97 @@
+import re
+from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+# --- تنظیمات ---
+MASTER_FILE = "master.txt"
+TIME_LINE_INDEX = 43  # ایندکس خط 44 برای زمان (HH:MM)
+DATE_LINE_INDEX = 45  # ایندکس خط 46 برای تاریخ (M/D/YYYY)
+SYNC_START_LINE = 9   # ایندکس خط 10 برای شروع بازه sync
+SYNC_END_LINE = 49    # ایندکس خط 50 برای پایان بازه sync (شامل خط 50)
+TARGET_FILES = [
+    "pwolverddammachitherackonfiontoward.txt",
+    "TINA_PRV.txt",
+    "user1.txt"
+]
+# --- پایان تنظیمات ---
+
+def update_datetime(master_lines, time_idx, date_idx):
+    # آپدیت زمان
+    iran_time = datetime.now(ZoneInfo("Asia/Tehran")).strftime("%H:%M")
+    if len(master_lines) > time_idx:
+        master_lines[time_idx] = re.sub(r'\d{2}:\d{2}', iran_time, master_lines[time_idx])
+        print(f"Updated time in master.txt line {time_idx + 1} to {iran_time}")
+    else:
+        print(f"Warning: master.txt has less than {time_idx + 1} lines. Cannot update time.")
+
+    # آپدیت تاریخ میلادی
+    current_date_miladi = datetime.now(ZoneInfo("UTC")) # اگر منظور تاریخ میلادی سیستم باشد
+    # اگر میخواهید تاریخ میلادی روز ایران را داشته باشید، از ZoneInfo("Asia/Tehran") استفاده کنید
+    # current_date_miladi = datetime.now(ZoneInfo("Asia/Tehran")) 
+    updated_date_miladi = current_date_miladi.strftime("%-m/%-d/%Y") # فرمت M/D/YYYY بدون صفر پیشرو
+
+    if len(master_lines) > date_idx:
+        # برای اطمینان بیشتر، از regex استفاده می کنیم تا فقط تاریخ M/D/YYYY را جایگزین کند
+        master_lines[date_idx] = re.sub(r'\d{1,2}/\d{1,2}/\d{4}', updated_date_miladi, master_lines[date_idx])
+        print(f"Updated date in master.txt line {date_idx + 1} to {updated_date_miladi}")
+    else:
+        print(f"Warning: master.txt has less than {date_idx + 1} lines. Cannot update date.")
+    
+    return master_lines
+
+def sync_range(master_lines, target_files, start_idx, end_idx):
+    if len(master_lines) <= start_idx or len(master_lines) <= end_idx:
+        print(f"Warning: master.txt content is too short for the sync range ({start_idx+1}-{end_idx+1}). Skipping sync.")
+        return
+
+    # استخراج بازه خطوط از master.txt
+    lines_to_sync = master_lines[start_idx : end_idx + 1]
+    
+    for target_file_name in target_files:
+        target_path = Path(target_file_name)
+        if not target_path.exists():
+            print(f"Warning: Target file '{target_file_name}' not found. Skipping.")
+            continue
+        
+        target_lines = target_path.read_text(encoding="utf-8").splitlines()
+        
+        # بررسی اینکه آیا فایل مقصد به اندازه کافی خط دارد
+        if len(target_lines) <= start_idx or len(target_lines) <= end_idx:
+             print(f"Warning: '{target_file_name}' has less than {end_idx + 1} lines. Cannot sync range ({start_idx+1}-{end_idx+1}).")
+             continue
+
+        # جایگزینی بازه خطوط در فایل مقصد
+        # ابتدا خطوط موجود در بازه را پاک می کنیم
+        # target_lines = target_lines[:start_idx] + target_lines[end_idx+1:] # این کار خطوط را کم می کند
+        # بهتر است مستقیما جایگزین کنیم
+        for i in range(len(lines_to_sync)):
+            if start_idx + i < len(target_lines):
+                target_lines[start_idx + i] = lines_to_sync[i]
+            else:
+                 # اگر فایل مقصد خط کمتری داشت، خطوط اضافه را اضافه می کنیم
+                 target_lines.append(lines_to_sync[i])
+
+        target_path.write_text("\n".join(target_lines) + "\n", encoding="utf-8")
+        print(f"Synced lines {start_idx + 1} to {end_idx + 1} from master.txt to '{target_file_name}'")
+
+# --- اجرای اصلی ---
+master_file_path = Path(MASTER_FILE)
+if not master_file_path.exists():
+    print(f"Error: Master file '{MASTER_FILE}' not found!")
+    exit(1)
+
+# خواندن کل خطوط master.txt
+master_lines = master_file_path.read_text(encoding="utf-8").splitlines()
+
+# 1. آپدیت زمان و تاریخ در master.txt
+updated_master_lines = update_datetime(master_lines, TIME_LINE_INDEX, DATE_LINE_INDEX)
+
+# 2. sync کردن بازه خطوط مشخص شده
+sync_range(updated_master_lines, TARGET_FILES, SYNC_START_LINE, SYNC_END_LINE)
+
+# نوشتن تمامی تغییرات (زمان، تاریخ، و sync) در master.txt
+master_file_path.write_text("\n".join(updated_master_lines) + "\n", encoding="utf-8")
+
+print("Process completed successfully.")
+

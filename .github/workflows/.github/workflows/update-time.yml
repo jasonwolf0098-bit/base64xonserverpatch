@@ -1,0 +1,52 @@
+name: Update Iran Time in master.txt
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-time:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update line 44 with dynamic Iran time
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+
+          file_path = Path("master.txt")
+          lines = file_path.read_text(encoding="utf-8").splitlines()
+
+          # دریافت ساعت فعلی ایران
+          now = datetime.now(ZoneInfo("Asia/Tehran"))
+          new_time = now.strftime("%H:%M") # فرمت 03:26
+
+          # تنظیم خط 44 (ایندکس 43)
+          if len(lines) >= 44:
+              current_line = lines[43]
+              
+              # استفاده از Regex برای پیدا کردن الگوی ساعت (XX:XX) در انتهای متن
+              # این الگو به دنبال دو عدد، یک دو نقطه و دو عدد دیگر می‌گردد
+              updated_line = re.sub(r'\d{2}:\d{2}', new_time, current_line)
+              
+              lines[43] = updated_line
+              file_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # فقط در صورتی که تغییری وجود داشت Commit انجام شود تا از حلقه بی‌پایان جلوگیری شود
+          git add master.txt
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update time to $new_time in line 44" && git push)

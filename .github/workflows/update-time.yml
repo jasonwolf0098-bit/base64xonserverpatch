@@ -1,0 +1,44 @@
+name: Update Iran Time
+
+on:
+  schedule:
+    - cron: '*/1 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-time:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        # نسخه به v4 آپدیت شد
+        uses: actions/checkout@v4
+
+      - name: Update line 44
+        run: |
+          python3 - <<'PY'
+          import re
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          
+          now = datetime.now(ZoneInfo("Asia/Tehran")).strftime("%H:%M")
+          
+          file_path = "master.txt"
+          with open(file_path, "r", encoding="utf-8") as f:
+              lines = f.readlines()
+          
+          if len(lines) >= 44:
+              lines[43] = re.sub(r'\d{2}:\d{2}', now, lines[43])
+              
+              with open(file_path, "w", encoding="utf-8") as f:
+                  f.writelines(lines)
+          PY
+
+      - name: Commit and Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add master.txt
+          git diff --staged --quiet || (git commit -m "Auto-update time to $(date +%H:%M) in line 44" && git push)

@@ -7,12 +7,15 @@ from zoneinfo import ZoneInfo
 MASTER_FILE = "master.txt"
 TIME_LINE_INDEX = 43  # ایندکس خط 44 برای زمان (HH:MM)
 DATE_LINE_INDEX = 45  # ایندکس خط 46 برای تاریخ (M/D/YYYY)
-SYNC_START_LINE = 9   # ایندکس خط 10 برای شروع بازه sync
+SYNC_START_LINE = 5   # ایندکس خط 10 برای شروع بازه sync
 SYNC_END_LINE = 49    # ایندکس خط 50 برای پایان بازه sync (شامل خط 50)
 TARGET_FILES = [
     "pwolverddammachitherackonfiontoward.txt",
     "TINA_PRV.txt",
     "user1.txt"
+    "user2.txt"
+    "user3.txt"
+    "user4.txt"
 ]
 # --- پایان تنظیمات ---
 

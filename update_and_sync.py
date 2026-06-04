@@ -12,9 +12,9 @@ SYNC_END_LINE = 49    # ایندکس خط 50 برای پایان بازه sync (
 TARGET_FILES = [
     "pwolverddammachitherackonfiontoward.txt",
     "TINA_PRV.txt",
-    "user1.txt"
-    "user2.txt"
-    "user3.txt"
+    "user1.txt",
+    "user2.txt",
+    "user3.txt",
     "user4.txt"
 ]
 # --- پایان تنظیمات ---

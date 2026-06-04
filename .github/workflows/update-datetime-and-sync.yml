@@ -134,7 +134,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # اضافه کردن همه فایل های متنی که در workflow دستکاری می شوند
-          git add master.txt pwolverddammachitherackonfiontoward.txt TINA_PRV.txt user1.txt update_and_sync.py
+          git add master.txt pwolverddammachitherackonfiontoward.txt TINA_PRV.txt user1.txt user2.txt user3.txt user4.txt update_and_sync.py
           
           # فقط اگر تغییری بود، commit و push کن
           git diff --staged --quiet || (git commit -m "Auto-update datetime and sync file ranges" && git push)
